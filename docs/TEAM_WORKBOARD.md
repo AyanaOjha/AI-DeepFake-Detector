@@ -30,7 +30,7 @@ and merged through [PR #8](https://github.com/AyushPatra45/AI-DeepFake-Detector/
 | ID | Task | Owner | Status | Branch | Owned files or area | Updated | PR / evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-03 | Run the baseline on an approved fixed dataset subset | Palak | BLOCKED | Create after dataset approval | Generated private manifests/results and reviewed aggregate results in `docs/MODEL_EVALUATION.md` | 2026-09-11 | Needs an approved dataset subset; no accuracy is claimed |
-| Y-01 | Build a controlled clean and LSB-embedded image corpus | Ayana | CLAIMED | `ayana/stego-validation` | New `evaluation/steganography/`, fixtures, and `docs/FORENSICS_EVALUATION.md` | 2026-09-12 | Claimed by Ayana; implementation not started |
+| Y-01 | Build a controlled clean and LSB-embedded image corpus | Ayana | IN_PROGRESS | `ayana/stego-validation` | New `evaluation/steganography/`, fixtures, and `docs/FORENSICS_EVALUATION.md` | 2026-09-12 | Building deterministic steganography evaluation; production code unchanged |
 | Y-02 | Evaluate ELA cases and document false positives | Ayana | READY | Suggested after Y-01: `ayana/ela-validation` | Evaluation assets/scripts and `docs/FORENSICS_EVALUATION.md`; coordinate before production ELA edits | 2026-09-05 | Not started |
 | Y-03 | Run interface accessibility and usability checks | Ayana | READY | Suggested: `ayana/usability-study` | `frontend/`, new usability notes; coordinate before changing shared API schemas | 2026-09-05 | Not started |
 
