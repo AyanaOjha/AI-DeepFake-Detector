@@ -20,7 +20,7 @@ claiming them as completed individual contributions.
 | Calibrated checkpoint inference | Palak | Implemented for review | Real CPU inference smoke test passed |
 | SRM, FFT and Grad-CAM artifacts | Palak | Implemented for review | All generated and loaded in browser |
 | ELA analysis | Ayana | Implemented for review | Automated artifact/statistic tests passed |
-| LSB indicators and supported extraction | Ayana | Implemented for review | Controlled hidden-payload test passed |
+| LSB indicators and supported extraction | Ayana | Complete and merged | Ayana's 16-case deterministic Y-01 evaluation and GitHub CI passed |
 | Image/video metadata | Ayana | Implemented for review | Basic image and integrated API tests passed |
 | Browser results workspace | Ayana | Implemented for review | Desktop/mobile and end-to-end browser tested |
 | Retention cleanup and configurable media limits | Ayush | Complete and merged | Startup/periodic cleanup and limit tests passed |
@@ -28,7 +28,8 @@ claiming them as completed individual contributions.
 | Deepfake runtime edge and batch paths | Palak | Complete and merged | Empty input, malformed checkpoint, unreadable image, batching and frame association tested |
 | Synthetic ELA/LSB demonstration corpus and repository CI | Ayush | Complete and merged | Reproducibility, checksums, extraction controls, heatmaps and GitHub Actions verified |
 | Cross-dataset scientific evaluation | Palak | Not started | Required before final review |
-| Extended stego validation and user study | Ayana | Not started | Required before final review |
+| Deterministic stego validation | Ayana | Complete and merged | Five supported extractions, six clean controls and five unsupported layouts evaluated |
+| ELA validation and user study | Ayana | Not started | Required before final review |
 
 ## Palak: required next work
 
@@ -43,17 +44,19 @@ claiming them as completed individual contributions.
 Palak's module is not scientifically complete until these results are reproducible.
 Loading a published checkpoint is implementation evidence, not a new accuracy claim.
 
-## Ayana: required next work
+## Ayana: progress and required next work
 
-1. Read and explain `backend/app/forensics/` and `frontend/`.
-2. Build a controlled corpus of clean and LSB-embedded PNG images with recorded payload
-   size, channel order, bit plane, and embedding method.
-3. Measure supported extraction success and document unsupported encrypted/keyed cases.
-4. Test ELA on original JPEG, recompressed JPEG, edited JPEG, PNG, and screenshots.
-5. Document ELA and LSB false positives without presenting either as proof.
-6. Run a five-person usability test covering upload, result interpretation, visual
+Completed in PR #9: a deterministic clean/LSB corpus with recorded payload size,
+channel order, bit plane, embedding method and checksums; supported extraction and
+unsupported keyed/channel layouts were measured and documented with explicit limits.
+
+1. Pull merged `main`, read and explain `backend/app/forensics/` and `frontend/`.
+2. Claim Y-02 before editing its files.
+3. Test ELA on original JPEG, recompressed JPEG, edited JPEG, PNG, and screenshots.
+4. Document ELA false positives without presenting ELA as proof.
+5. Run a five-person usability test covering upload, result interpretation, visual
    evidence, history, and report download.
-7. Improve accessibility and wording from the observed user errors.
+6. Improve accessibility and wording from the observed user errors.
 
 ## Ayush: integration status
 
@@ -69,7 +72,10 @@ CI are merged.
 - Published checkpoint SHA-256:
   `c5c2002b5ef6c7ee0c542d7d203e16386dc641b685859d8a58ac883b52c8e4c9`.
 - Checkpoint calibration loaded: threshold `0.01`, temperature `1.4788347482681274`.
-- Automated suite: 63 tests passing after PR #8 demonstration-corpus and CI integration.
+- Automated suite: 66 tests passing after PR #9 steganography evaluation integration.
+- Y-01 controlled evaluation: 5/5 supported payloads extracted exactly, 0/6 supported-
+  payload false positives on clean controls, and 0/5 unsupported layouts falsely
+  reported as supported; these figures are not real-world generalisation claims.
 - Browser workflow: upload, processing, completed result, case history, five visual
   artifacts, and report links verified without console errors.
 - Responsive check: no horizontal document overflow at a 390-pixel viewport.
