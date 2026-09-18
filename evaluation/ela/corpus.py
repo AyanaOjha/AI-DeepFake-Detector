@@ -25,6 +25,13 @@ ELA_JPEG_QUALITY = 90
 ELA_HIGHLIGHT_THRESHOLD = 20
 
 
+def project_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(REPOSITORY_ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
+
+
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -72,7 +79,7 @@ def generate_ela_corpus(
         cases.append(
             {
                 "id": case_id,
-                "file": path.relative_to(REPOSITORY_ROOT).as_posix(),
+                "file": project_path(path),
                 "category": category,
                 "seed": case_seed,
                 "source_encoding": source_encoding,

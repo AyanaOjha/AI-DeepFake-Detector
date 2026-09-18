@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -18,6 +19,13 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from app.forensics.ela import generate_ela  # noqa: E402
+
+
+def project_path(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(REPOSITORY_ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
 
 
 def heatmap_region_metrics(
@@ -61,6 +69,10 @@ def evaluate_case(
     source_path = REPOSITORY_ROOT / case["file"]
     heatmap_path = heatmap_dir / f"{case['id']}.png"
 
+    digest = hashlib.sha256(source_path.read_bytes()).hexdigest()
+    if digest != case["image_sha256"]:
+        raise ValueError(f"Image checksum mismatch for {case['id']}")
+
     result = generate_ela(
         source_path,
         heatmap_path,
@@ -84,7 +96,7 @@ def evaluate_case(
         "percentile_95_error": result.percentile_95_error,
         "max_error": result.max_error,
         "highlighted_pixel_ratio": result.highlighted_pixel_ratio,
-        "heatmap": heatmap_path.relative_to(REPOSITORY_ROOT).as_posix(),
+        "heatmap": project_path(heatmap_path),
         "region_metrics": heatmap_region_metrics(
             heatmap_path,
             case["known_edit_region_xyxy"],
@@ -185,9 +197,7 @@ def evaluate_manifest(
         "task": "Y-02",
         "production_implementation": "backend/app/forensics/ela.py",
         "production_code_modified": False,
-        "manifest": manifest_path.relative_to(
-            REPOSITORY_ROOT
-        ).as_posix(),
+        "manifest": project_path(manifest_path),
         "interpretation_boundary": manifest[
             "interpretation_boundary"
         ],

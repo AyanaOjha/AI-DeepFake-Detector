@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+import pytest
+
 from evaluation.ela import corpus, evaluate
 
 
@@ -145,3 +147,39 @@ def test_existing_ela_reports_benign_false_positive_conditions(
             tmp_path / "repository" / case["heatmap"]
         )
         assert heatmap_path.exists()
+
+
+def test_ela_evaluation_rejects_changed_corpus_image(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    output_dir, manifest = generate_test_corpus(tmp_path, monkeypatch)
+    image_path = tmp_path / "repository" / manifest["cases"][0]["file"]
+    image_path.write_bytes(image_path.read_bytes() + b"changed")
+
+    with pytest.raises(ValueError, match="Image checksum mismatch"):
+        evaluate.evaluate_manifest(
+            output_dir / "manifest.json",
+            output_dir / "results.json",
+        )
+
+
+def test_ela_evaluation_accepts_output_outside_repository(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    repository_root = tmp_path / "repository"
+    repository_root.mkdir()
+    monkeypatch.setattr(corpus, "REPOSITORY_ROOT", repository_root)
+    monkeypatch.setattr(evaluate, "REPOSITORY_ROOT", repository_root)
+
+    output_dir = tmp_path / "external-output"
+    manifest = corpus.generate_ela_corpus(output_dir)
+    assert Path(manifest["cases"][-1]["file"]).is_absolute()
+
+    results = evaluate.evaluate_manifest(
+        output_dir / "manifest.json",
+        output_dir / "results.json",
+    )
+    assert results["summary"]["total_cases"] == 10
+    assert Path(results["manifest"]).is_absolute()

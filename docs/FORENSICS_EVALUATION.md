@@ -160,6 +160,7 @@ evaluation/steganography/generated/results.json
 
 Both files are reproducible generated evidence and are excluded from Git along
 with the generated PNG files.
+
 ## Y-02 ELA Evaluation
 
 ### Scope
@@ -179,6 +180,7 @@ different quality levels plus benign resize, blur, and noise processing.
 
 Every case records its seed, source encoding, processing history, SHA-256 checksum,
 ELA JPEG quality, highlight threshold, known-edit status, and expected interpretation.
+The evaluator checks each input against its recorded SHA-256 before analysis.
 
 The production `generate_ela` function was run with:
 
