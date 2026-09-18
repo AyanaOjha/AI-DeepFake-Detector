@@ -4,7 +4,7 @@ This is the single source of truth for active project work. Update this file bef
 starting a task and again when its state changes. `TEAM_STATUS.md` records broader
 milestones; this file prevents two members from editing the same area at the same time.
 
-Last remote audit: 12 September 2026 by Ayush. Palak's evaluation pipeline was reviewed
+Last remote audit: 18 September 2026 by Ayush. Palak's evaluation pipeline was reviewed
 and merged through [PR #3](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/3).
 Ayush's retention and resource-limit work was reviewed and merged through
 [PR #4](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/4). Palak's evaluator
@@ -16,6 +16,8 @@ Ayush's reproducible synthetic demonstration corpus and repository CI were revie
 and merged through [PR #8](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/8).
 Ayana's deterministic steganography evaluation was independently verified, approved,
 and merged through [PR #9](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/9).
+Ayana's controlled ELA evaluation was reproduced, reviewed, and merged through
+[PR #11](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/11).
 
 ## Status values
 
@@ -31,7 +33,6 @@ and merged through [PR #9](https://github.com/AyushPatra45/AI-DeepFake-Detector/
 | ID | Task | Owner | Status | Branch | Owned files or area | Updated | PR / evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-03 | Run the baseline on an approved fixed dataset subset | Palak | BLOCKED | Create after dataset approval | Generated private manifests/results and reviewed aggregate results in `docs/MODEL_EVALUATION.md` | 2026-09-11 | Needs an approved dataset subset; no accuracy is claimed |
-| Y-02 | Evaluate ELA cases and document false positives | Ayana | IN_PROGRESS | `ayana/ela-validation` | Evaluation assets/scripts and `docs/FORENSICS_EVALUATION.md`; coordinate before production ELA edits | 2026-09-18 | Building deterministic ELA evaluation; production code unchanged |
 | Y-03 | Run interface accessibility and usability checks | Ayana | READY | Suggested: `ayana/usability-study` | `frontend/`, new usability notes; coordinate before changing shared API schemas | 2026-09-05 | Not started |
 
 Only one large task per person may be `CLAIMED` or `IN_PROGRESS` at a time.
@@ -49,6 +50,7 @@ Only one large task per person may be `CLAIMED` or `IN_PROGRESS` at a time.
 | Retention cleanup and configurable analysis limits | Ayush | Ayush | MERGED | PR #4; commit `218db76`; 45 tests, Ruff and diff checks passed |
 | Reproducible synthetic demonstration corpus and repository CI | Ayush | Ayush | MERGED | PR #8; merge commit `7bb1c93`; 63 tests, Ruff and GitHub Actions passed |
 | Deterministic steganography corpus and LSB evaluation | Ayana | Ayana | MERGED | PR #9; 16 controlled cases; 66 tests, Ruff, whitespace checks and GitHub Actions passed; independently reviewed by Ayush |
+| Controlled ELA evaluation and false-positive analysis | Ayana | Ayana, with Ayush review fix | MERGED | PR #11; ten controlled cases; 71 tests, Ruff and whitespace checks passed; reproduced by Ayush |
 | ELA, LSB and metadata integration | Ayana domain | Ayush with Codex assistance | MERGED | PR #2, commit `d027194`; Ayana must still review and validate it |
 | Dual-stream detector integration | Palak domain | Ayush with Codex assistance | MERGED | PR #2, commit `04119ab`; Palak must still review and validate it |
 | Browser forensic workspace | Ayana domain | Ayush with Codex assistance | MERGED | PR #2, commit `49cba6d`; Ayana must still review and validate it |
@@ -84,6 +86,7 @@ Add a short entry only when useful; keep the newest entry first.
 
 | Date | Member | Task | Done | Next | Blocker |
 | --- | --- | --- | --- | --- | --- |
+| 2026-09-18 | Ayush | Y-02 review | Reproduced ten controlled ELA cases, verified the negative localisation result, added checksum and external-path regression coverage, and merged [PR #11](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/11); 71 tests and Ruff passed | Ayana may claim Y-03 after updating from `main` | None |
 | 2026-09-12 | Ayush | Y-01 review | Independently reproduced the 16-case steganography evaluation, approved and merged [PR #9](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/9); 66 tests, Ruff, whitespace checks and GitHub Actions passed | Ayana may claim Y-02 after updating from `main` | None |
 | 2026-09-12 | Ayana | Y-01 | Added a deterministic 16-case PNG corpus, LSB evaluation runner, tests and forensic limitations in [PR #9](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/9) | Pull merged `main`, then claim Y-02 before starting ELA evaluation work | None |
 | 2026-09-12 | Ayush | A-03 | Merged [PR #8](https://github.com/AyushPatra45/AI-DeepFake-Detector/pull/8) with a deterministic six-image ELA/LSB demonstration corpus, manifest checksums, regression tests, documentation and repository CI; 63 local tests, Ruff and GitHub Actions passed | Review Ayana's Y-01 PR and integrate approved P-03 results when available | P-03 still requires formal FaceForensics++ access approval |

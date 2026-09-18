@@ -1,6 +1,6 @@
 # Team Implementation Status
 
-Status date: 12 September 2026
+Status date: 18 September 2026
 
 ## Authorship note
 
@@ -19,7 +19,7 @@ claiming them as completed individual contributions.
 | Dual-stream deepfake architecture | Palak | Implemented for review | Forward pass and checkpoint compatibility verified |
 | Calibrated checkpoint inference | Palak | Implemented for review | Real CPU inference smoke test passed |
 | SRM, FFT and Grad-CAM artifacts | Palak | Implemented for review | All generated and loaded in browser |
-| ELA analysis | Ayana | Implemented for review | Automated artifact/statistic tests passed |
+| ELA analysis | Ayana | Implemented for review | Automated tests passed; controlled Y-02 evaluation documented limitations |
 | LSB indicators and supported extraction | Ayana | Complete and merged | Ayana's 16-case deterministic Y-01 evaluation and GitHub CI passed |
 | Image/video metadata | Ayana | Implemented for review | Basic image and integrated API tests passed |
 | Browser results workspace | Ayana | Implemented for review | Desktop/mobile and end-to-end browser tested |
@@ -29,7 +29,8 @@ claiming them as completed individual contributions.
 | Synthetic ELA/LSB demonstration corpus and repository CI | Ayush | Complete and merged | Reproducibility, checksums, extraction controls, heatmaps and GitHub Actions verified |
 | Cross-dataset scientific evaluation | Palak | Not started | Required before final review |
 | Deterministic stego validation | Ayana | Complete and merged | Five supported extractions, six clean controls and five unsupported layouts evaluated |
-| ELA validation and user study | Ayana | Not started | Required before final review |
+| Controlled ELA validation | Ayana | Complete and merged | Ten cases reproduced; benign highlight conditions and failed edit localisation documented |
+| Interface accessibility and user study | Ayana | Not started | Required before final review |
 
 ## Palak: required next work
 
@@ -51,12 +52,12 @@ channel order, bit plane, embedding method and checksums; supported extraction a
 unsupported keyed/channel layouts were measured and documented with explicit limits.
 
 1. Pull merged `main`, read and explain `backend/app/forensics/` and `frontend/`.
-2. Claim Y-02 before editing its files.
-3. Test ELA on original JPEG, recompressed JPEG, edited JPEG, PNG, and screenshots.
-4. Document ELA false positives without presenting ELA as proof.
-5. Run a five-person usability test covering upload, result interpretation, visual
+2. Y-02 is complete: ten controlled ELA cases and false-positive conditions are
+   documented in `docs/FORENSICS_EVALUATION.md`.
+3. Claim Y-03 after pulling updated `main`.
+4. Run a five-person usability test covering upload, result interpretation, visual
    evidence, history, and report download.
-6. Improve accessibility and wording from the observed user errors.
+5. Improve accessibility and wording from the observed user errors.
 
 ## Ayush: integration status
 
@@ -76,6 +77,9 @@ CI are merged.
 - Y-01 controlled evaluation: 5/5 supported payloads extracted exactly, 0/6 supported-
   payload false positives on clean controls, and 0/5 unsupported layouts falsely
   reported as supported; these figures are not real-world generalisation claims.
+- Y-02 controlled evaluation: ten cases, including nine benign controls; the known
+  edited region was dimmer than the background in its heatmap. No binary ELA
+  false-positive rate is claimed because ELA does not issue a binary decision.
 - Browser workflow: upload, processing, completed result, case history, five visual
   artifacts, and report links verified without console errors.
 - Responsive check: no horizontal document overflow at a 390-pixel viewport.
