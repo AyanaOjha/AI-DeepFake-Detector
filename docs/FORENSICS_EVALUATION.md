@@ -1,4 +1,4 @@
-# Steganography Forensics Evaluation
+# Forensics Evaluation
 
 ## Scope
 
@@ -160,3 +160,144 @@ evaluation/steganography/generated/results.json
 
 Both files are reproducible generated evidence and are excluded from Git along
 with the generated PNG files.
+## Y-02 ELA Evaluation
+
+### Scope
+
+This section records Ayana's Y-02 evaluation of the existing
+`backend/app/forensics/ela.py` implementation. Production ELA code was not changed.
+
+ELA measures differences produced by JPEG recompression. The implementation returns
+continuous measurements and a heatmap; it does not define a binary authentic/fake
+decision. Therefore, a binary false-positive rate is not reported.
+
+### Methodology
+
+The evaluation used ten deterministic, project-generated cases with principal seed
+`20260912`. It reused the merged A-03 controls and added single-encoded JPEGs at
+different quality levels plus benign resize, blur, and noise processing.
+
+Every case records its seed, source encoding, processing history, SHA-256 checksum,
+ELA JPEG quality, highlight threshold, known-edit status, and expected interpretation.
+
+The production `generate_ela` function was run with:
+
+- JPEG comparison quality: `90`
+- Highlight threshold: `20`
+- Output: PNG heatmap
+- Measurements: mean error, 95th-percentile error, maximum error, and highlighted
+  pixel ratio
+
+The controlled edited image contains a known rectangular edit at
+`x=186..290, y=70..174`. Its heatmap intensity inside that region was compared with
+the remaining image.
+
+### Corpus design
+
+| Case | Category | Processing | Known edit |
+| --- | --- | --- | --- |
+| `png-clean-cover` | PNG control | Lossless synthetic cover | No |
+| `png-screenshot` | Screenshot control | Flat regions and sharp interface edges | No |
+| `jpeg-original-95` | Single JPEG | One quality-95 encoding | No |
+| `jpeg-recompressed-55` | Benign recompression | Quality 95 decoded and saved at quality 55 | No |
+| `jpeg-edited-region-88` | Controlled edit | Mirrored region inserted and saved at quality 88 | Yes |
+| `jpeg-single-75` | Single JPEG | One quality-75 encoding | No |
+| `jpeg-single-50` | Single JPEG | One quality-50 encoding | No |
+| `jpeg-resized` | Benign processing | Downscaled and upscaled using bicubic resampling | No |
+| `jpeg-blurred` | Benign processing | Gaussian blur radius 1.5 | No |
+| `jpeg-noise` | Benign processing | Deterministic Gaussian noise, standard deviation 8 | No |
+
+### Results
+
+| Case | Mean error | P95 error | Maximum error | Highlighted ratio |
+| --- | ---: | ---: | ---: | ---: |
+| `png-clean-cover` | 20.9751 | 99.0 | 208 | 0.244089 |
+| `png-screenshot` | 5.4045 | 27.0 | 123 | 0.076445 |
+| `jpeg-original-95` | 21.4560 | 99.0 | 204 | 0.259818 |
+| `jpeg-recompressed-55` | 19.9399 | 94.0 | 215 | 0.279714 |
+| `jpeg-edited-region-88` | 20.6068 | 98.0 | 205 | 0.269375 |
+| `jpeg-single-75` | 21.1046 | 98.0 | 217 | 0.299310 |
+| `jpeg-single-50` | 19.6458 | 93.0 | 213 | 0.274193 |
+| `jpeg-resized` | 5.9345 | 19.0 | 62 | 0.045104 |
+| `jpeg-blurred` | 3.6020 | 10.0 | 32 | 0.001823 |
+| `jpeg-noise` | 24.5207 | 98.0 | 200 | 0.325443 |
+
+All nine benign/control cases contained at least some pixels above the configured
+highlight threshold.
+
+Four benign cases met or exceeded the controlled edit's highlighted-pixel ratio:
+
+- `jpeg-recompressed-55`
+- `jpeg-single-75`
+- `jpeg-single-50`
+- `jpeg-noise`
+
+Four benign cases met or exceeded the controlled edit's 95th-percentile error:
+
+- `png-clean-cover`
+- `jpeg-original-95`
+- `jpeg-single-75`
+- `jpeg-noise`
+
+### Known-edit localisation
+
+The controlled edited case produced:
+
+| Measurement | Result |
+| --- | ---: |
+| Known-region mean heatmap intensity | 16.6191 |
+| Background mean heatmap intensity | 26.5949 |
+| Region-to-background ratio | 0.6249 |
+
+The known edited region was dimmer than the image background in the generated
+heatmap. In this controlled case, ELA did not reliably localise the edit.
+
+This is a negative but important result. It must not be altered or omitted merely
+because it does not demonstrate successful localisation.
+
+### False-positive conditions
+
+A formal binary false-positive rate is undefined because the production ELA
+implementation does not classify images as manipulated or authentic.
+
+However, the controlled measurements demonstrate clear false-positive conditions
+for visual interpretation:
+
+- Ordinary single JPEG encoding produced strong residuals.
+- Lower JPEG quality produced highlighted ratios greater than the edited case.
+- Benign recompression exceeded the edited case's highlighted ratio.
+- Added noise produced the largest highlighted ratio in the corpus.
+- PNG-to-JPEG comparison highlighted ordinary texture and edges.
+- Screenshot edges produced visible ELA response without deceptive editing.
+
+Consequently, a bright ELA region must not be described as proof of manipulation.
+
+### Limitations
+
+- The corpus contains synthetic controls rather than real forensic evidence.
+- The ten cases do not estimate population-level accuracy.
+- JPEG encoder and Pillow-version differences may slightly change measurements.
+- ELA responds to compression, noise, resampling, filtering, edges, and image history.
+- Uniform recompression may hide or reduce differences from a real edit.
+- A manipulated image may produce a weak heatmap.
+- An authentic or benignly processed image may produce a strong heatmap.
+- ELA cannot identify who edited an image, why it was edited, or whether an edit is
+  malicious.
+- Results must be combined with metadata, provenance, content inspection, and other
+  forensic signals.
+
+### Reproduction
+
+From the repository root with the Python 3.11 virtual environment active:
+
+```powershell
+python evaluation/ela/corpus.py
+python evaluation/ela/evaluate.py
+python -m pytest backend/tests/test_ela_evaluation.py -q
+python -m pytest -q
+python -m ruff check backend evaluation scripts
+git diff --check
+```
+
+Generated images, heatmaps, manifests, and result JSON files are written beneath
+`evaluation/ela/generated/` and excluded from Git.
