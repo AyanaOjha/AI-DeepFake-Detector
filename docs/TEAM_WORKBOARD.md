@@ -33,7 +33,7 @@ Ayana's controlled ELA evaluation was reproduced, reviewed, and merged through
 | ID | Task | Owner | Status | Branch | Owned files or area | Updated | PR / evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-03 | Run the baseline on an approved fixed dataset subset | Palak | BLOCKED | Create after dataset approval | Generated private manifests/results and reviewed aggregate results in `docs/MODEL_EVALUATION.md` | 2026-09-11 | Needs an approved dataset subset; no accuracy is claimed |
-| Y-03 | Run interface accessibility and usability checks | Ayana | READY | Suggested: `ayana/usability-study` | `frontend/`, new usability notes; coordinate before changing shared API schemas | 2026-09-05 | Not started |
+| Y-03 | Run interface accessibility and usability checks | Ayana | CLAIMED | `ayana/usability-study` | `frontend/`, new usability notes; coordinate before changing shared API schemas | 2026-09-18 | Claimed by Ayana; implementation not started |
 
 Only one large task per person may be `CLAIMED` or `IN_PROGRESS` at a time.
 
