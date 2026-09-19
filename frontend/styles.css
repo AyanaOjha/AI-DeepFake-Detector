@@ -27,6 +27,19 @@ body {
 
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--cyan-dark);
+  outline-offset: 3px;
+}
+
+.sidebar :where(a, button):focus-visible {
+  outline-color: #7ee1e5;
+}
+
+.drop-zone:focus-within {
+  outline: 3px solid var(--cyan-dark);
+  outline-offset: 3px;
+}
 
 .app-shell { display: grid; grid-template-columns: 224px minmax(0, 1fr); min-height: 100vh; }
 

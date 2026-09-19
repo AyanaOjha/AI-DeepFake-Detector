@@ -96,6 +96,7 @@ function renderResult(job) {
 
   if (!result) {
     byId("warningList").innerHTML = `<div class="warning">${escapeText(job.error || "Analysis failed")}</div>`;
+    byId("resultHeading").focus();
     return;
   }
 
@@ -118,7 +119,7 @@ function renderResult(job) {
   renderWarnings(result);
   renderArtifacts(result.modules);
   renderFrames(result.frames);
-  byId("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  byId("resultHeading").focus();
 }
 
 function renderModules(modules) {
@@ -207,12 +208,37 @@ async function loadHistory() {
   }
 }
 
-function switchView(name) {
-  document.querySelectorAll(".view").forEach((view) => view.classList.toggle("active", view.id === `${name}View`));
-  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.view === name));
-  if (name === "history") loadHistory();
+function activateTab(selectedTab, focusTab = false) {
+  document.querySelectorAll(".tab").forEach((tab) => {
+    const active = tab === selectedTab;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+
+  document.querySelectorAll(".tab-panel").forEach((panel) => {
+    const active = panel.id === selectedTab.getAttribute("aria-controls");
+    panel.classList.toggle("active", active);
+    panel.hidden = !active;
+  });
+
+  if (focusTab) selectedTab.focus();
 }
 
+function switchView(name, focusHeading = false) {
+  document.querySelectorAll(".view").forEach((view) => {
+    view.classList.toggle("active", view.id === `${name}View`);
+  });
+
+  document.querySelectorAll(".nav-item").forEach((item) => {
+    const active = item.dataset.view === name;
+    item.classList.toggle("active", active);
+    item.setAttribute("aria-pressed", String(active));
+  });
+
+  if (name === "history") loadHistory();
+  if (focusHeading) byId(`${name}Heading`).focus();
+}
 function initialiseEvents() {
   byId("uploadForm").addEventListener("submit", submitAnalysis);
   byId("mediaFile").addEventListener("change", (event) => selectFile(event.target.files[0]));
@@ -226,15 +252,33 @@ function initialiseEvents() {
     dropZone.classList.remove("dragging");
   }));
   dropZone.addEventListener("drop", (event) => selectFile(event.dataTransfer.files[0]));
-  document.querySelectorAll(".nav-item").forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
-  document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach((tab) => {
-      const active = tab === button;
-      tab.classList.toggle("active", active);
-      tab.setAttribute("aria-selected", String(active));
+  document.querySelectorAll(".nav-item").forEach((button) => {
+    button.addEventListener("click", () => switchView(button.dataset.view, true));
+  });
+
+  const tabs = Array.from(document.querySelectorAll(".tab"));
+  tabs.forEach((button, index) => {
+    button.addEventListener("click", () => activateTab(button));
+
+    button.addEventListener("keydown", (event) => {
+      let nextIndex;
+
+      if (event.key === "ArrowRight") {
+        nextIndex = (index + 1) % tabs.length;
+      } else if (event.key === "ArrowLeft") {
+        nextIndex = (index - 1 + tabs.length) % tabs.length;
+      } else if (event.key === "Home") {
+        nextIndex = 0;
+      } else if (event.key === "End") {
+        nextIndex = tabs.length - 1;
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      activateTab(tabs[nextIndex], true);
     });
-    document.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `${button.dataset.tab}Panel`));
-  }));
+  });
   byId("refreshHistory").addEventListener("click", loadHistory);
   byId("historyTable").addEventListener("click", async (event) => {
     const button = event.target.closest("[data-job]");
